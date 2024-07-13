@@ -1,4 +1,3 @@
-import fetch from 'node-fetch';
 import { apiUrl } from '../config/serverConfig';
 
 export async function fetchData(): Promise<any> {
