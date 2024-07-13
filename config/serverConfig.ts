@@ -1,0 +1,1 @@
+export const apiUrl = 'https://rest.fnar.net/recipes/allrecipes';

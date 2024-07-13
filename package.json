@@ -1,0 +1,17 @@
+{
+  "name": "kawa-prices",
+  "version": "0.0.1",
+  "description": "Tool for calculating the KAWA prices in PrUn",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node build/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^4.5.4",
+    "@types/node": "^16.0.0"
+  }
+}
