@@ -1,4 +1,4 @@
-import {Recipes} from "./Recipe";
+import {Materials} from "./Material";
 
 export type DailyConsumption = {
     ticker: string
@@ -9,7 +9,7 @@ export class Worker {
     workerCategory: string
     consumables: DailyConsumption[]
 
-    private _costPerDay = 0
+    private _costPerDay = -1
 
     constructor(data: WorkerData) {
         this.workerCategory = data.workerCategory
@@ -17,7 +17,7 @@ export class Worker {
     }
 
     get costPerDay(): number {
-        if (!this._costPerDay) {
+        if (this._costPerDay < 0) {
             this._costPerDay = this.calculateCostPerDay()
         }
 
@@ -25,23 +25,52 @@ export class Worker {
     }
 
     calculateCostPerDay(): number {
-        return this.consumables.reduce((sum, consume) => {
-            const consumable = Recipes.getCheapestRecipeByOutput(consume.ticker)
+        const cost = this.consumables.reduce((sum, consume) => {
+            const consumable = Materials.getCheapestRecipeByOutput(consume.ticker)
             return sum + consumable.price * consume.amount
         }, 0)
+
+        console.log(`Worker\t${this.workerCategory}\t${cost}\t(per day)`)
+
+        return cost
     }
-    
+
     extractConsumables(data: WorkerData): DailyConsumption[] {
         return Object.entries(data.consumables).map(([ticker, amount]) => ({
             ticker,
             amount: Number(amount)
         }))
     }
+
+    cloneWithCost(_costPerDay: number): Worker {
+        return {
+            ...this,
+            _costPerDay
+        }
+    }
 }
 
 export class Workers {
-    static getWorkerOfType(category: string): Worker {
+    static current: WorkersMap = {}
 
+    static getWorkerOfType(category: string): Worker {
+        return this.current[category]
+    }
+
+    static importWorkers(data: WorkerData[]) {
+        data
+            .map(workerData => new Worker(workerData))
+            .forEach(worker => {
+                this.current[worker.workerCategory] = worker
+            })
+    }
+
+    static prepareNextIteration() {
+        this.current = Object.entries(this.current)
+            .reduce((acc, [ticker, worker]) => {
+                acc[ticker] = worker.cloneWithCost(-1)
+                return acc
+            }, {} as WorkersMap)
     }
 }
 
@@ -50,4 +79,8 @@ export type WorkerData = {
     consumables: {
         [index: string]: number
     }
+}
+
+type WorkersMap = {
+    [index: string]: Worker
 }

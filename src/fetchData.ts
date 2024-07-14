@@ -1,4 +1,4 @@
-import { apiUrl } from '../config/serverConfig';
+import { apiUrl } from './config'
 
 export async function fetchData(): Promise<any> {
   const response = await fetch(apiUrl);

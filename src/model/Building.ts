@@ -1,4 +1,4 @@
-import {Ingredient, Recipes} from "./Recipe";
+import {MaterialAmount, Iteration, Materials} from "./Material";
 import {Worker, Workers} from "./Worker"
 
 export type WorkerAllocation = {
@@ -8,12 +8,12 @@ export type WorkerAllocation = {
 
 export class Building {
     ticker: string
-    buildingCosts: Ingredient[]
+    buildingCosts: MaterialAmount[]
     workforce: WorkerAllocation[]
 
     roiDays = 21
 
-    private _costPerMs: number = 0
+    private _costPerMs: number = -1
 
     constructor(data: BuildingData) {
         this.buildingCosts = this.extractBuildingCosts(data)
@@ -22,14 +22,18 @@ export class Building {
     }
 
     get costPerMs(): number {
-        if (!this._costPerMs) {
+        if (this._costPerMs < 0) {
             this._costPerMs = this.calculateCostPerMs()
         }
         return this._costPerMs
     }
 
     calculateCostPerMs(): number {
-        return this.calculateCostPerMsWorkforce() + this.calculateCostPerMsBuildingRoi()
+        const cost = this.calculateCostPerMsWorkforce() + this.calculateCostPerMsBuildingRoi()
+
+        console.log(`Building\t${this.ticker}\t${cost * 86_400_000}\t(per day)`)
+
+        return cost
     }
 
     calculateCostPerMsWorkforce(): number {
@@ -40,12 +44,12 @@ export class Building {
 
     calculateCostPerMsBuildingRoi(): number {
         return this.buildingCosts.reduce((sum, buildingIngrdient) => {
-            const material = Recipes.getCheapestRecipeByOutput(buildingIngrdient.ticker)
+            const material = Materials.getCheapestRecipeByOutput(buildingIngrdient.ticker, Iteration.PREVIOUS)
             return sum + material.price * buildingIngrdient.amount / (this.roiDays * 86_400_000)
         }, 0)
     }
 
-    extractBuildingCosts(data: BuildingData): Ingredient[] {
+    extractBuildingCosts(data: BuildingData): MaterialAmount[] {
         return data.BuildingCosts.map(it => ({
             ticker: it.CommodityTicker,
             amount: it.Amount
@@ -71,11 +75,35 @@ export class Building {
             return {worker, amount}
         })
     }
+
+    cloneWithCost(_costPerMs: number): Building {
+        return {
+            ...this,
+            _costPerMs
+        }
+    }
 }
 
 export class Buildings {
-    static getBuildingByTicker(tiker: string): Building {
+    static current: BuildingsMap = {}
+    static getBuildingByTicker(ticker: string): Building {
+        return this.current[ticker]
+    }
 
+    static importBuildings(data: BuildingData[]) {
+        data
+            .map(buildingData => new Building(buildingData))
+            .forEach(building => {
+                this.current[building.ticker] = building
+            })
+    }
+
+    static prepareNextIteration() {
+        this.current = Object.entries(this.current)
+            .reduce((acc, [ticker, building]) => {
+                acc[ticker] = building.cloneWithCost(-1)
+                return acc
+            }, {} as BuildingsMap)
     }
 }
 
@@ -88,8 +116,8 @@ export type BuildingData = {
         Amount: number
     }[]
     Recipes: {
-        Inputs: Ingredient[]
-        Outputs: Ingredient[]
+        Inputs: MaterialAmount[]
+        Outputs: MaterialAmount[]
         BuildingRecipeId: string
         DurationMs: number
         RecipeName: string
@@ -107,4 +135,8 @@ export type BuildingData = {
     AreaCost: number
     UserNameSubmitted: string
     Timestamp: string
+}
+
+type BuildingsMap = {
+    [index: string]: Building
 }
