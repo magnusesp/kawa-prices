@@ -24,5 +24,31 @@
             }
         ],
         "TimeMs": 21600000
+    },
+    {
+        "BuildingTicker": "COL",
+        "RecipeName": "=>",
+        "StandardRecipeName": "COL:=>",
+        "Inputs": [],
+        "Outputs": [
+            {
+                "Ticker": "N",
+                "Amount": 7
+            }
+        ],
+        "TimeMs": 21600000
+    },
+    {
+        "BuildingTicker": "EXT",
+        "RecipeName": "=>",
+        "StandardRecipeName": "EXT:=>",
+        "Inputs": [],
+        "Outputs": [
+            {
+                "Ticker": "LST",
+                "Amount": 7
+            }
+        ],
+        "TimeMs": 21600000
     }
 ]

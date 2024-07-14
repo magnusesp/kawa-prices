@@ -105,9 +105,15 @@ export class Materials {
     }
 
     static getRecipesByOutput(ticker: string, iteration: Iteration = Iteration.CURRENT): Material[] {
-        return iteration === Iteration.CURRENT
+        const receipe = iteration === Iteration.CURRENT
             ? this.current[ticker]
             : this.previous[ticker]
+
+        if (!receipe) {
+            throw new Error(`Unknown recipe ${ticker} in ${iteration}`)
+        }
+
+        return receipe
     }
 
     static getCheapestRecipeByOutput(ticker: string, iteration: Iteration = Iteration.CURRENT): Material {
@@ -128,8 +134,8 @@ export class Materials {
 }
 
 export enum Iteration {
-    CURRENT,
-    PREVIOUS
+    CURRENT = "CURRENT",
+    PREVIOUS = "PREVIOUS"
 }
 
 export type RecipeData = {

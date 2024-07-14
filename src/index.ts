@@ -27,8 +27,12 @@ async function main() {
     Materials.importRecipes(fetchCachedNaturalResources())
     Materials.importRecipes(true ? await fetchRecipes() : fetchCachedRecipes(), priceOverride)
 
-    const grn = Materials.getCheapestRecipeByOutput("GRN")
-    console.log(`GRN costs `, grn)
+    const calcThese = ["GRN", "MAI"]
+
+    calcThese.forEach(ticker => {
+        const mat = Materials.getCheapestRecipeByOutput(ticker)
+        console.log(ticker, mat)
+    })
 }
 
 function createOverrideMaterial(ticker: string, price: number) {
