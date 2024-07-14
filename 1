@@ -1,0 +1,14 @@
+/home/magg/git/kawa-prices/src/model/Material.ts:127
+            throw new Error(`No recipes for ticker ${ticker}`)
+                  ^
+Error: No recipes for ticker BSE
+    at Function.getCheapestRecipeByOutput (/home/magg/git/kawa-prices/src/model/Material.ts:127:19)
+    at /home/magg/git/kawa-prices/src/model/Building.ts:47:40
+    at Array.reduce (<anonymous>)
+    at Building.calculateCostPerMsBuildingRoi (/home/magg/git/kawa-prices/src/model/Building.ts:46:35)
+    at Building.calculateCostPerMs (/home/magg/git/kawa-prices/src/model/Building.ts:32:64)
+    at Building.get costPerMs [as costPerMs] (/home/magg/git/kawa-prices/src/model/Building.ts:26:36)
+    at Material.calculatePriceBulding (/home/magg/git/kawa-prices/src/model/Material.ts:66:66)
+    at Material.calculatePrice (/home/magg/git/kawa-prices/src/model/Material.ts:51:59)
+    at Material.get price [as price] (/home/magg/git/kawa-prices/src/model/Material.ts:34:32)
+    at cheapestRecipe.getRecipesByOutput.reduce.price (/home/magg/git/kawa-prices/src/model/Material.ts:123:27)

@@ -1,0 +1,28 @@
+[
+    {
+        "BuildingTicker": "RIG",
+        "RecipeName": "=>",
+        "StandardRecipeName": "RIG:=>",
+        "Inputs": [],
+        "Outputs": [
+            {
+                "Ticker": "H2O",
+                "Amount": 9
+            }
+        ],
+        "TimeMs": 17280000
+    },
+    {
+        "BuildingTicker": "COL",
+        "RecipeName": "=>",
+        "StandardRecipeName": "COL:=>",
+        "Inputs": [],
+        "Outputs": [
+            {
+                "Ticker": "O",
+                "Amount": 7
+            }
+        ],
+        "TimeMs": 21600000
+    }
+]

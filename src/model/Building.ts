@@ -57,7 +57,7 @@ export class Building {
     }
 
     extractWorkforce(data: BuildingData): WorkerAllocation[] {
-        const workerTypes = ["Pioneers", "Settlers", "Technicians", "Engineers", "Scientists"]
+        const workerTypes = ["Pioneers"] // , "Settlers", "Technicians", "Engineers", "Scientists"]
 
         return workerTypes.map(type => {
             const worker = Workers.getWorkerOfType(type)
@@ -77,10 +77,12 @@ export class Building {
     }
 
     cloneWithCost(_costPerMs: number): Building {
-        return {
-            ...this,
-            _costPerMs
-        }
+        return Object.assign(
+            Object.create(Object.getPrototypeOf(this)),
+            {
+                ...this,
+                _costPerMs
+            })
     }
 }
 

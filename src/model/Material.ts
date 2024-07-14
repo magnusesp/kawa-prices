@@ -35,10 +35,6 @@ export class Material {
         return this._price
     }
 
-    set price(value: number) {
-        this._price = value
-    }
-
     calculatePrice(): number {
         // TODO Enable multiple outputs
         const outputAmount = this.outputs[0]?.amount
@@ -66,10 +62,12 @@ export class Material {
     }
 
     cloneWithPrice(_price: number): Material {
-        return {
-            ...this,
-            _price
-        }
+        return Object.assign(
+            Object.create(Object.getPrototypeOf(this)),
+            {
+                ...this,
+                _price
+            })
     }
 }
 
@@ -77,8 +75,12 @@ export class Materials {
     static current: RecipesMap = {}
     static previous: RecipesMap = {}
 
-    static importRecipes(data: RecipeData[]) {
+    static priceOverride: priceOverrideMap = {}
+
+    static importRecipes(data: RecipeData[], priceOverride: priceOverrideMap = {}) {
+        this.priceOverride = priceOverride
         data
+            .filter(recipeData => recipeData.Outputs.length === 1)
             .map(recipeData => new Material(recipeData))
             .forEach(material => {
                 const previousMaterial = material.cloneWithPrice(0)
@@ -109,6 +111,10 @@ export class Materials {
     }
 
     static getCheapestRecipeByOutput(ticker: string, iteration: Iteration = Iteration.CURRENT): Material {
+        if (this.priceOverride[ticker]) {
+            return this.priceOverride[ticker]
+        }
+
         const cheapestRecipe = this.getRecipesByOutput(ticker, iteration).reduce((min, recipe) => {
             return recipe.price < min.price ? recipe : min
         }, {price: Infinity} as unknown as Material)
@@ -137,4 +143,8 @@ export type RecipeData = {
 
 type RecipesMap = {
     [index: string]: Material[]
+}
+
+type priceOverrideMap = {
+    [index: string]: Material
 }
