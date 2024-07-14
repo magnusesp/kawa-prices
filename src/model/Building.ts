@@ -31,7 +31,7 @@ export class Building {
     calculateCostPerMs(): number {
         const cost = this.calculateCostPerMsWorkforce() + this.calculateCostPerMsBuildingRoi()
 
-        console.log(`Building\t${this.ticker}\t${cost * 86_400_000}\t(per day)`)
+//        console.log(`Building\t${this.ticker}\t${cost * 86_400_000}\t(per day)`)
 
         return cost
     }

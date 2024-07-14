@@ -32,6 +32,19 @@
         "Inputs": [],
         "Outputs": [
             {
+                "Ticker": "H",
+                "Amount": 7
+            }
+        ],
+        "TimeMs": 21600000
+    },
+    {
+        "BuildingTicker": "COL",
+        "RecipeName": "=>",
+        "StandardRecipeName": "COL:=>",
+        "Inputs": [],
+        "Outputs": [
+            {
                 "Ticker": "N",
                 "Amount": 7
             }
@@ -46,6 +59,136 @@
         "Outputs": [
             {
                 "Ticker": "LST",
+                "Amount": 7
+            }
+        ],
+        "TimeMs": 21600000
+    },
+    {
+        "BuildingTicker": "EXT",
+        "RecipeName": "=>",
+        "StandardRecipeName": "EXT:=>",
+        "Inputs": [],
+        "Outputs": [
+            {
+                "Ticker": "TCO",
+                "Amount": 7
+            }
+        ],
+        "TimeMs": 21600000
+    },
+    {
+        "BuildingTicker": "EXT",
+        "RecipeName": "=>",
+        "StandardRecipeName": "EXT:=>",
+        "Inputs": [],
+        "Outputs": [
+            {
+                "Ticker": "BRM",
+                "Amount": 7
+            }
+        ],
+        "TimeMs": 21600000
+    },
+    {
+        "BuildingTicker": "EXT",
+        "RecipeName": "=>",
+        "StandardRecipeName": "EXT:=>",
+        "Inputs": [],
+        "Outputs": [
+            {
+                "Ticker": "MGS",
+                "Amount": 7
+            }
+        ],
+        "TimeMs": 21600000
+    },
+    {
+        "BuildingTicker": "EXT",
+        "RecipeName": "=>",
+        "StandardRecipeName": "EXT:=>",
+        "Inputs": [],
+        "Outputs": [
+            {
+                "Ticker": "FEO",
+                "Amount": 7
+            }
+        ],
+        "TimeMs": 21600000
+    },
+    {
+        "BuildingTicker": "EXT",
+        "RecipeName": "=>",
+        "StandardRecipeName": "EXT:=>",
+        "Inputs": [],
+        "Outputs": [
+            {
+                "Ticker": "TAI",
+                "Amount": 7
+            }
+        ],
+        "TimeMs": 21600000
+    },
+    {
+        "BuildingTicker": "EXT",
+        "RecipeName": "=>",
+        "StandardRecipeName": "EXT:=>",
+        "Inputs": [],
+        "Outputs": [
+            {
+                "Ticker": "ALO",
+                "Amount": 7
+            }
+        ],
+        "TimeMs": 21600000
+    },
+    {
+        "BuildingTicker": "EXT",
+        "RecipeName": "=>",
+        "StandardRecipeName": "EXT:=>",
+        "Inputs": [],
+        "Outputs": [
+            {
+                "Ticker": "BER",
+                "Amount": 7
+            }
+        ],
+        "TimeMs": 21600000
+    },
+    {
+        "BuildingTicker": "EXT",
+        "RecipeName": "=>",
+        "StandardRecipeName": "EXT:=>",
+        "Inputs": [],
+        "Outputs": [
+            {
+                "Ticker": "HAL",
+                "Amount": 7
+            }
+        ],
+        "TimeMs": 21600000
+    },
+    {
+        "BuildingTicker": "EXT",
+        "RecipeName": "=>",
+        "StandardRecipeName": "EXT:=>",
+        "Inputs": [],
+        "Outputs": [
+            {
+                "Ticker": "ZIR",
+                "Amount": 7
+            }
+        ],
+        "TimeMs": 21600000
+    },
+    {
+        "BuildingTicker": "EXT",
+        "RecipeName": "=>",
+        "StandardRecipeName": "EXT:=>",
+        "Inputs": [],
+        "Outputs": [
+            {
+                "Ticker": "TS",
                 "Amount": 7
             }
         ],

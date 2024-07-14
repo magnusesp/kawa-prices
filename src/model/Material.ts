@@ -14,18 +14,16 @@ export class Material {
     timeMs: number
     private _price: number = -1
 
-    constructor(data: RecipeData) {
+    static currentPath: string[] = []
+
+    constructor(ticker: string, data: RecipeData) {
         this.buildingTicker = data.BuildingTicker
         this.recipeName = data.RecipeName
         this.inputs = data.Inputs.map(input => ({ticker: input.Ticker, amount: input.Amount}))
         this.outputs = data.Outputs.map(output => ({ticker: output.Ticker, amount: output.Amount}))
         this.timeMs = data.TimeMs
 
-        if (this.outputs.length !== 1) {
-            throw new Error(`Cannot handle multiple outputs yet. Recipe ${this.recipeName}`)
-        }
-
-        this.ticker = this.outputs[0].ticker
+        this.ticker = ticker
     }
 
     get price(): number {
@@ -36,17 +34,21 @@ export class Material {
     }
 
     calculatePrice(): number {
-        // TODO Enable multiple outputs
-        const outputAmount = this.outputs[0]?.amount
+        Material.currentPath.push(this.ticker)
 
-        if (!outputAmount) {
+        // TODO Enable multiple outputs
+        const outputAmountSum = this.outputs.reduce((sum, mat) => sum + mat.amount, 0)
+        const outputAmountMaterial = this.outputs.find(mat => mat.ticker === this.ticker)?.amount
+
+        if (!outputAmountMaterial) {
             throw new Error(`Cannot find output amount for material ${this.ticker} recipe ${this.recipeName}`)
         }
 
-        const price = (this.calculatePriceInputs() + this.calculatePriceBulding()) / outputAmount
+        const price = (this.calculatePriceInputs() + this.calculatePriceBulding()) * (outputAmountMaterial / outputAmountSum)
 
-        console.log(`Material\t${this.ticker}\t${price}\t${this.recipeName}`)
+//        console.log(`Material\t${this.ticker}\t${price}\t${this.recipeName}\t${Material.currentPath.join(",")}`)
 
+        Material.currentPath.pop()
         return price
     }
 
@@ -75,24 +77,33 @@ export class Materials {
     static current: RecipesMap = {}
     static previous: RecipesMap = {}
 
-    static priceOverride: priceOverrideMap = {}
+    static allTickers: string[] = []
 
-    static importRecipes(data: RecipeData[], priceOverride: priceOverrideMap = {}) {
-        this.priceOverride = priceOverride
+    static importRecipes(data: RecipeData[], priceOverride: PriceOverrideMap = {}) {
+        const allTickersMap: {[index: string]: number} = {}
+
         data
-            .filter(recipeData => recipeData.Outputs.length === 1)
-            .map(recipeData => new Material(recipeData))
+            .flatMap(recipeData => this.createMaterialInstances(recipeData))
             .forEach(material => {
+                const currentMaterial = priceOverride[material.ticker] ? material.cloneWithPrice(priceOverride[material.ticker]) : material
                 const previousMaterial = material.cloneWithPrice(0)
 
                 if (this.current[material.ticker]) {
-                    this.current[material.ticker].push(material)
+                    this.current[material.ticker].push(currentMaterial)
                     this.previous[material.ticker].push(previousMaterial)
                 } else {
-                    this.current[material.ticker] = [material]
+                    this.current[material.ticker] = [currentMaterial]
                     this.previous[material.ticker] = [previousMaterial]
                 }
+
+                allTickersMap[material.ticker] = 1
             })
+
+            this.allTickers = Object.keys(allTickersMap)
+    }
+
+    static createMaterialInstances(data: RecipeData): Material[] {
+        return data.Outputs.map(output => new Material(output.Ticker, data))
     }
 
     static prepareNextIteration() {
@@ -110,17 +121,13 @@ export class Materials {
             : this.previous[ticker]
 
         if (!receipe) {
-            throw new Error(`Unknown recipe ${ticker} in ${iteration}`)
+            throw new Error(`Unknown recipe ${ticker} in ${iteration}. Path: ${Material.currentPath.join(",")}`)
         }
 
         return receipe
     }
 
     static getCheapestRecipeByOutput(ticker: string, iteration: Iteration = Iteration.CURRENT): Material {
-        if (this.priceOverride[ticker]) {
-            return this.priceOverride[ticker]
-        }
-
         const cheapestRecipe = this.getRecipesByOutput(ticker, iteration).reduce((min, recipe) => {
             return recipe.price < min.price ? recipe : min
         }, {price: Infinity} as unknown as Material)
@@ -151,6 +158,6 @@ type RecipesMap = {
     [index: string]: Material[]
 }
 
-type priceOverrideMap = {
-    [index: string]: Material
+type PriceOverrideMap = {
+    [index: string]: number
 }

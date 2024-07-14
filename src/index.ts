@@ -4,6 +4,7 @@ import {fetchBuildings, fetchCachedBuildings,
     fetchCachedNaturalResources, fetchCachedRecipes, fetchCachedWorkers, fetchRecipes} from "./fetchData";
 import {Material, Materials} from './model/Material';
 import {Workers} from "./model/Worker";
+import {Statistics} from "./model/Statistics";
 
 const argv = yargs
   .option('refetch', {
@@ -17,38 +18,42 @@ const argv = yargs
 
 async function main() {
     const priceOverride = {
-        "DW":createOverrideMaterial("DW", 25),
-        "OVE":createOverrideMaterial("OVE", 40),
-        "RAT":createOverrideMaterial("RAT", 40),
+        "DW": 25,
+        "OVE": 40,
+        "RAT": 40,
     }
 
     Workers.importWorkers(fetchCachedWorkers())
-    Buildings.importBuildings(true ? await fetchBuildings() : fetchCachedBuildings())
+    Buildings.importBuildings(false ? await fetchBuildings() : fetchCachedBuildings())
     Materials.importRecipes(fetchCachedNaturalResources())
-    Materials.importRecipes(true ? await fetchRecipes() : fetchCachedRecipes(), priceOverride)
+    Materials.importRecipes(false ? await fetchRecipes() : fetchCachedRecipes(), priceOverride)
 
-    const calcThese = ["GRN", "MAI"]
+    const calcThese = Materials.allTickers
 
     calcThese.forEach(ticker => {
-        const mat = Materials.getCheapestRecipeByOutput(ticker)
-        console.log(ticker, mat)
+        Materials.getCheapestRecipeByOutput(ticker)
     })
-}
 
-function createOverrideMaterial(ticker: string, price: number) {
-    const overrideMaterial = new Material({
-        BuildingTicker: "OVERRIDE",
-        RecipeName : "OVERRIDE",
-        StandardRecipeName:  "OVERRIDE",
-            Inputs: [],
-            Outputs: [{
-                Ticker: ticker,
-                Amount: 1
-            }],
-            TimeMs: 1,
-        })
+    const startStamp = Date.now()
+    let counter = 0
+    let correlation = 0
 
-    return overrideMaterial.cloneWithPrice(price)
+    do {
+        Buildings.prepareNextIteration()
+        Materials.prepareNextIteration()
+        Workers.prepareNextIteration()
+
+        correlation = Statistics.calculateCorrelation()
+        counter++
+
+        const elapsedTimeMs = Date.now() - startStamp
+        console.log(`Correlation is ${correlation.toFixed(6)} after ${counter} rounds. (${(elapsedTimeMs / counter).toFixed(0)} ms / round)`)
+
+    } while(counter < 20 && correlation < 0.99)
+
+    Materials.allTickers.forEach(ticker => {
+        console.log(`${ticker}\t${Materials.getCheapestRecipeByOutput(ticker).price.toFixed(2)}`)
+    })
 }
 
 main()

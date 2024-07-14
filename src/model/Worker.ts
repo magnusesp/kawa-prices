@@ -30,7 +30,7 @@ export class Worker {
             return sum + consumable.price * consume.amount
         }, 0)
 
-        console.log(`Worker\t\t${this.workerCategory}\t${cost}\t(per day)`)
+//        console.log(`Worker\t\t${this.workerCategory}\t${cost}\t(per day)`)
 
         return cost
     }
