@@ -2,9 +2,48 @@
     {
         "workerCategory": "Pioneers",
         "consumables": {
-            "DW": 1,
-            "OVE": 1,
-            "RAT": 1
+            "DW": 4,
+            "OVE": 4,
+            "RAT": 0.5
+        }
+    },
+    {
+        "workerCategory": "Settlers",
+        "consumables": {
+            "DW": 5,
+            "RAT": 6,
+            "EXO": 0.5,
+            "PT": 0.5
+        }
+    },
+    {
+        "workerCategory": "Technicians",
+        "consumables": {
+            "DW": 7.5,
+            "RAT": 7,
+            "MED": 0.5,
+            "HMS": 0.5,
+            "SCN": 0.1
+        }
+    },
+    {
+        "workerCategory": "Engineers",
+        "consumables": {
+            "DW": 10,
+            "MED": 0.5,
+            "FIM": 7,
+            "HSS": 0.2,
+            "PDA": 0.1
+        }
+    },
+    {
+        "workerCategory": "Scientists",
+        "consumables": {
+            "DW": 10,
+            "MED": 0.5,
+            "MEA": 7,
+            "LC": 0.2,
+            "WS": 0.1
         }
     }
 ]

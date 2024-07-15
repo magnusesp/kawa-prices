@@ -1,4 +1,5 @@
-import {Materials} from "./Material";
+import { printNewPrices } from "../config";
+import {Iteration, Materials} from "./Material";
 
 export type DailyConsumption = {
     ticker: string
@@ -26,11 +27,11 @@ export class Worker {
 
     calculateCostPerDay(): number {
         const cost = this.consumables.reduce((sum, consume) => {
-            const consumable = Materials.getCheapestRecipeByOutput(consume.ticker)
+            const consumable = Materials.getCheapestRecipeByOutput(consume.ticker, Iteration.PREVIOUS)
             return sum + consumable.price * consume.amount
         }, 0)
 
-//        console.log(`Worker\t\t${this.workerCategory}\t${cost}\t(per day)`)
+        if (printNewPrices) console.log(`Worker\t\t${this.workerCategory}\t${cost}\t(per day)`)
 
         return cost
     }
@@ -38,7 +39,7 @@ export class Worker {
     extractConsumables(data: WorkerData): DailyConsumption[] {
         return Object.entries(data.consumables).map(([ticker, amount]) => ({
             ticker,
-            amount: Number(amount)
+            amount: Number(amount) / 100 // File content is per 100 workforce
         }))
     }
 

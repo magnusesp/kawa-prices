@@ -1,3 +1,4 @@
+import { printNewPrices } from "../config";
 import {Buildings} from "./Building";
 
 export type MaterialAmount = {
@@ -28,12 +29,23 @@ export class Material {
 
     get price(): number {
         if (this._price < 0) {
-            this._price = this.calculatePrice()
+            try {
+                this._price = this.calculatePrice()
+            } catch (e: any) {
+                if (/Circular reference/.test(e)) {
+//                    console.error(`Got circular reference for ${this.ticker}, skipping with Infinity`, e)
+                    return Infinity
+                }
+            }
         }
         return this._price
     }
 
     calculatePrice(): number {
+        if(Material.currentPath.includes(this.ticker)) {
+            throw new Error(`Circular reference at ${this.ticker} ${this.recipeName}. Path: ${Material.currentPath.join(",")}`)
+        }
+
         Material.currentPath.push(this.ticker)
 
         // TODO Enable multiple outputs
@@ -44,9 +56,23 @@ export class Material {
             throw new Error(`Cannot find output amount for material ${this.ticker} recipe ${this.recipeName}`)
         }
 
-        const price = (this.calculatePriceInputs() + this.calculatePriceBulding()) * (outputAmountMaterial / outputAmountSum)
 
-//        console.log(`Material\t${this.ticker}\t${price}\t${this.recipeName}\t${Material.currentPath.join(",")}`)
+        const priceInputs = this.calculatePriceInputs();
+        const priceBuilding = this.calculatePriceBulding();
+        // TODO is that actually accurate?
+        const fraction = 1 / outputAmountSum * ( outputAmountMaterial / outputAmountSum)
+//
+//        console.log(`Price Inputs: ${priceInputs}`);
+//        console.log(`Price Building: ${priceBuilding}`);
+//        console.log(`Output Amount Material: ${outputAmountMaterial}`);
+//        console.log(`Output Amount Sum: ${outputAmountSum}`);
+//        console.log(`Fraction: ${fraction}`);
+
+        const price = (priceInputs + priceBuilding) * fraction;
+
+//        const price = (this.calculatePriceInputs() + this.calculatePriceBulding()) * (outputAmountMaterial / outputAmountSum)
+
+        if (printNewPrices) console.log(`Material\t${this.ticker}\t${price}\t${this.recipeName}\t${Material.currentPath.join(",")}`)
 
         Material.currentPath.pop()
         return price
@@ -85,8 +111,8 @@ export class Materials {
         data
             .flatMap(recipeData => this.createMaterialInstances(recipeData))
             .forEach(material => {
-                const currentMaterial = priceOverride[material.ticker] ? material.cloneWithPrice(priceOverride[material.ticker]) : material
-                const previousMaterial = material.cloneWithPrice(0)
+                const currentMaterial = material
+                const previousMaterial =  priceOverride[material.ticker] ? material.cloneWithPrice(priceOverride[material.ticker]) : material.cloneWithPrice(0)
 
                 if (this.current[material.ticker]) {
                     this.current[material.ticker].push(currentMaterial)
@@ -100,6 +126,7 @@ export class Materials {
             })
 
             this.allTickers = Object.keys(allTickersMap)
+            this.allTickers.sort()
     }
 
     static createMaterialInstances(data: RecipeData): Material[] {
@@ -133,7 +160,7 @@ export class Materials {
         }, {price: Infinity} as unknown as Material)
 
         if (cheapestRecipe.price === Infinity) {
-            throw new Error(`No recipes for ticker ${ticker}`)
+            throw new Error(`No usable recipes for ticker ${ticker}`)
         }
 
         return cheapestRecipe

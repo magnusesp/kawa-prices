@@ -6,15 +6,13 @@ import {Material, Materials} from './model/Material';
 import {Workers} from "./model/Worker";
 import {Statistics} from "./model/Statistics";
 
-const argv = yargs
-  .option('refetch', {
-    alias: 'r',
-    description: 'Refetch data',
-    type: 'boolean',
-  })
-  .help()
-  .alias('help', 'h')
-  .argv
+interface Argv {
+    fetchData: boolean;
+  }
+
+const argv = yargs.options({
+    fetchData: { type: 'boolean', demandOption: false, default: false, describe: 'Flag to fetch data' }
+}).argv as Argv
 
 async function main() {
     const priceOverride = {
@@ -24,10 +22,9 @@ async function main() {
     }
 
     Workers.importWorkers(fetchCachedWorkers())
-    Buildings.importBuildings(false ? await fetchBuildings() : fetchCachedBuildings())
+    Buildings.importBuildings(argv.fetchData ? await fetchBuildings() : fetchCachedBuildings())
     Materials.importRecipes(fetchCachedNaturalResources())
-    Materials.importRecipes(false ? await fetchRecipes() : fetchCachedRecipes(), priceOverride)
-
+    Materials.importRecipes(argv.fetchData ? await fetchRecipes() : fetchCachedRecipes(), priceOverride)
     const calcThese = Materials.allTickers
 
     calcThese.forEach(ticker => {
@@ -50,10 +47,10 @@ async function main() {
         console.log(`Correlation is ${correlation.toFixed(6)} after ${counter} rounds. (${(elapsedTimeMs / counter).toFixed(0)} ms / round)`)
 
     } while(counter < 20 && correlation < 0.99)
-
-    Materials.allTickers.forEach(ticker => {
-        console.log(`${ticker}\t${Materials.getCheapestRecipeByOutput(ticker).price.toFixed(2)}`)
-    })
+//
+//    Materials.allTickers.forEach(ticker => {
+//        console.log(`${ticker}\t${Materials.getCheapestRecipeByOutput(ticker).price.toFixed(2)}`)
+//    })
 }
 
 main()

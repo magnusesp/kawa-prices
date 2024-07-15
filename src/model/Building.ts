@@ -1,3 +1,4 @@
+import { printNewPrices } from "../config";
 import {MaterialAmount, Iteration, Materials} from "./Material";
 import {Worker, Workers} from "./Worker"
 
@@ -31,7 +32,7 @@ export class Building {
     calculateCostPerMs(): number {
         const cost = this.calculateCostPerMsWorkforce() + this.calculateCostPerMsBuildingRoi()
 
-//        console.log(`Building\t${this.ticker}\t${cost * 86_400_000}\t(per day)`)
+        if (printNewPrices) console.log(`Building\t${this.ticker}\t${cost * 86_400_000}\t(per day)`)
 
         return cost
     }
@@ -57,7 +58,7 @@ export class Building {
     }
 
     extractWorkforce(data: BuildingData): WorkerAllocation[] {
-        const workerTypes = ["Pioneers"] // , "Settlers", "Technicians", "Engineers", "Scientists"]
+        const workerTypes = ["Pioneers", "Settlers", "Technicians", "Engineers", "Scientists"]
 
         return workerTypes.map(type => {
             const worker = Workers.getWorkerOfType(type)

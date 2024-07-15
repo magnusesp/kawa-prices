@@ -5,3 +5,5 @@ export const recipesCacheFile = "./data/recipes.json"
 
 export const naturalResourcesCacheFile = "./data/naturalResources.json"
 export const workersCacheFile = "./data/workers.json"
+
+export const printNewPrices = true
