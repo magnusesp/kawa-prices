@@ -49,26 +49,25 @@ export class Material {
         Material.currentPath.push(this.ticker)
 
         // TODO Enable multiple outputs
-        const outputAmountSum = this.outputs.reduce((sum, mat) => sum + mat.amount, 0)
+        const outputAmountTotal = this.outputs.reduce((sum, mat) => sum + mat.amount, 0)
         const outputAmountMaterial = this.outputs.find(mat => mat.ticker === this.ticker)?.amount
 
         if (!outputAmountMaterial) {
             throw new Error(`Cannot find output amount for material ${this.ticker} recipe ${this.recipeName}`)
         }
 
+        const outputFractionMaterial = outputAmountMaterial / outputAmountTotal
 
         const priceInputs = this.calculatePriceInputs();
         const priceBuilding = this.calculatePriceBulding();
         // TODO is that actually accurate?
-        const fraction = 1 / outputAmountSum * ( outputAmountMaterial / outputAmountSum)
 //
 //        console.log(`Price Inputs: ${priceInputs}`);
 //        console.log(`Price Building: ${priceBuilding}`);
 //        console.log(`Output Amount Material: ${outputAmountMaterial}`);
 //        console.log(`Output Amount Sum: ${outputAmountSum}`);
-//        console.log(`Fraction: ${fraction}`);
 
-        const price = (priceInputs + priceBuilding) * fraction;
+        const price = (priceInputs + priceBuilding) * outputFractionMaterial / outputAmountMaterial;
 
 //        const price = (this.calculatePriceInputs() + this.calculatePriceBulding()) * (outputAmountMaterial / outputAmountSum)
 
