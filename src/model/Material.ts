@@ -60,16 +60,8 @@ export class Material {
 
         const priceInputs = this.calculatePriceInputs();
         const priceBuilding = this.calculatePriceBulding();
-        // TODO is that actually accurate?
-//
-//        console.log(`Price Inputs: ${priceInputs}`);
-//        console.log(`Price Building: ${priceBuilding}`);
-//        console.log(`Output Amount Material: ${outputAmountMaterial}`);
-//        console.log(`Output Amount Sum: ${outputAmountSum}`);
 
         const price = (priceInputs + priceBuilding) * outputFractionMaterial / outputAmountMaterial;
-
-//        const price = (this.calculatePriceInputs() + this.calculatePriceBulding()) * (outputAmountMaterial / outputAmountSum)
 
         if (printNewPrices) console.log(`Material\t${this.ticker}\t${price}\t${this.recipeName}\t${Material.currentPath.join(",")}`)
 
