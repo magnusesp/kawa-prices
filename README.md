@@ -20,20 +20,29 @@
    * Basic consumables ✅
    * Luxury consumables
 * Buildings
+   * Construction costs ✅
    * Worker costs ✅
    * Consider repair costs
-   * Housing costs for workers
+     * (50% every 80 days => construction cost / 160 * ROI days)
+   * Housing costs for workers (HB1/HB2/...)
+   * CM cost (area used / 475)
+   * ROI of 25 days ✅
 * Materials
-   * Price of inputs ✅
+   * Price of Material inputs ✅
+   * Price of Natural resources inputs ✅
    * Multiple outputs: divide cost equally per unit produced ✅
-   * Building costs ✅
+   * Building costs (diveded by ms per unit) ✅
+   * CoGC
+   * Production fees
 * Natural resources
-   * Building costs ✅
-   * Optimal planet
-   * Optimal planet w/ range of planet X
+   * Same as Materials, plus:
+      * Optimal planet
+      * Optimal planet w/ range of planet X
+      * Shipping costs
 * Planets
    * Prices per planet
-   * Shipping costs
+   * Shipping costs (fixed prices per jump/intra system travel)
+   * Shipping costs (dynamic)
 
 
 
