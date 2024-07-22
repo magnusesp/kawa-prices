@@ -1,5 +1,5 @@
-import { printNewPrices } from "../config";
-import {MaterialAmount, Iteration, Materials} from "./Material";
+import config from "../config"
+import {MaterialAmount, Iteration, Materials} from "./Material"
 import {Worker, Workers} from "./Worker"
 
 export type WorkerAllocation = {
@@ -11,8 +11,6 @@ export class Building {
     ticker: string
     buildingCosts: MaterialAmount[]
     workforce: WorkerAllocation[]
-
-    roiDays = 21
 
     private _costPerMs: number = -1
 
@@ -32,7 +30,7 @@ export class Building {
     calculateCostPerMs(): number {
         const cost = this.calculateCostPerMsWorkforce() + this.calculateCostPerMsBuildingRoi()
 
-        if (printNewPrices) console.log(`Building\t${this.ticker}\t${cost * 86_400_000}\t(per day)`)
+        if (config.printNewPrices) console.log(`Building\t${this.ticker}\t${cost * 86_400_000}\t(per day)`)
 
         return cost
     }
@@ -46,8 +44,8 @@ export class Building {
     calculateCostPerMsBuildingRoi(): number {
         return this.buildingCosts.reduce((sum, buildingIngrdient) => {
             const material = Materials.getCheapestRecipeByOutput(buildingIngrdient.ticker, Iteration.PREVIOUS)
-            return sum + material.price * buildingIngrdient.amount / (this.roiDays * 86_400_000)
-        }, 0)
+            return sum + material.price * buildingIngrdient.amount / (config.baseRoiDays * 86_400_000)
+        }, 0) * (1 + 1 / 160 * config.baseRoiDays)
     }
 
     extractBuildingCosts(data: BuildingData): MaterialAmount[] {

@@ -22,7 +22,7 @@
 * Buildings
    * Construction costs ✅
    * Worker costs ✅
-   * Consider repair costs
+   * Consider repair costs ✅
      * (50% every 80 days => construction cost / 160 * ROI days)
    * Housing costs for workers (HB1/HB2/...)
    * CM cost (area used / 475)
