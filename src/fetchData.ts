@@ -2,6 +2,8 @@ import {
     buildingCacheFile,
     buildingsUrl,
     naturalResourcesCacheFile,
+    planetCacheFile,
+    planetsUrl,
     recipesCacheFile,
     recipesUrl,
     workersCacheFile
@@ -10,6 +12,7 @@ import {BuildingData} from "./model/Building";
 import * as fs from "node:fs";
 import {RecipeData} from "./model/Material";
 import {WorkerData} from "./model/Worker";
+import { PlanetData } from './model/Planet';
 
 export async function fetchBuildings(): Promise<BuildingData[]> {
   return fetchAndCache(buildingsUrl, buildingCacheFile)
@@ -17,6 +20,14 @@ export async function fetchBuildings(): Promise<BuildingData[]> {
 
 export function fetchCachedBuildings(): BuildingData[] {
   return JSON.parse(fs.readFileSync(buildingCacheFile).toString())
+}
+
+export async function fetchPlanets(): Promise<PlanetData[]> {
+  return fetchAndCache(planetsUrl, planetCacheFile)
+}
+
+export function fetchCachedPlanets(): PlanetData[] {
+  return JSON.parse(fs.readFileSync(planetCacheFile).toString())
 }
 
 export async function fetchRecipes(): Promise<RecipeData[]> {
@@ -96,6 +107,7 @@ export function fetchCachedWorkers(): WorkerData[] {
 
 
 async function fetchAndCache(url: string, filePath: string): Promise<any[]> {
+  console.log(`Fetching ${url}`)
   const response = await fetch(url);
   if (!response.ok) {
     throw new Error('Network response was not ok');

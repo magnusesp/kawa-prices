@@ -1,10 +1,13 @@
 import yargs from "yargs"
 import {Buildings} from "./model/Building"
-import {fetchBuildings, fetchCachedBuildings,
-    fetchCachedNaturalResources, fetchCachedRecipes, fetchCachedWorkers, fetchRecipes} from "./fetchData";
+import {
+    fetchBuildings, fetchCachedBuildings,
+    fetchCachedNaturalResources, fetchCachedPlanets, fetchCachedRecipes, fetchCachedWorkers, fetchPlanets, fetchRecipes
+} from "./fetchData";
 import {Material, Materials} from './model/Material';
 import {Workers} from "./model/Worker";
 import {Statistics} from "./model/Statistics";
+import {Planets} from "./model/Planet";
 
 interface Argv {
     fetchData: boolean;
@@ -21,6 +24,7 @@ async function main() {
         "RAT": 40,
     }
 
+    Planets.importPlanets(argv.fetchData ? await fetchPlanets() : fetchCachedPlanets())
     Workers.importWorkers(fetchCachedWorkers())
     Buildings.importBuildings(argv.fetchData ? await fetchBuildings() : fetchCachedBuildings())
     Materials.importRecipes(fetchCachedNaturalResources())
