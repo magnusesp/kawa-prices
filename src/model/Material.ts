@@ -1,5 +1,6 @@
 import { printNewPrices } from "../config";
 import {Buildings} from "./Building";
+import { Core, Iteration } from "./Core";
 
 export type MaterialAmount = {
     ticker: string
@@ -15,8 +16,6 @@ export class Material {
     timeMs: number
     private _price: number = -1
 
-    static currentPath: string[] = []
-
     constructor(ticker: string, data: RecipeData) {
         this.buildingTicker = data.BuildingTicker
         this.recipeName = data.RecipeName
@@ -28,12 +27,14 @@ export class Material {
     }
 
     get price(): number {
+        Core.pushPath(this.ticker + this.recipeName, Iteration.LOOKUP, `${this._price}`)
+
         if (this._price < 0) {
             try {
                 this._price = this.calculatePrice()
             } catch (e: any) {
-                if (/Circular reference/.test(e)) {
-//                    console.error(`Got circular reference for ${this.ticker}, skipping with Infinity`, e)
+                if (/Circular reference at/.test(e)) {
+                    console.error(`Got circular reference for ${this.ticker}, skipping with Infinity`, e)
                     return Infinity
                 }
             }
@@ -42,11 +43,7 @@ export class Material {
     }
 
     calculatePrice(): number {
-        if(Material.currentPath.includes(this.ticker)) {
-            throw new Error(`Circular reference at ${this.ticker} ${this.recipeName}. Path: ${Material.currentPath.join(",")}`)
-        }
-
-        Material.currentPath.push(this.ticker)
+        Core.pushPath(this.ticker, Iteration.CURRENT, this.recipeName)
 
         // TODO Enable multiple outputs
         const outputAmountTotal = this.outputs.reduce((sum, mat) => sum + mat.amount, 0)
@@ -63,9 +60,9 @@ export class Material {
 
         const price = (priceInputs + priceBuilding) * outputFractionMaterial / outputAmountMaterial;
 
-        if (printNewPrices) console.log(`Material\t${this.ticker}\t${price}\t${this.recipeName}\t${Material.currentPath.join(",")}`)
+        if (printNewPrices) console.log(`Material\t${this.ticker}\t${price}\t${this.recipeName}\t${Core.returnPathAsString(false)}`)
 
-        Material.currentPath.pop()
+        Core.popPath(this.ticker, Iteration.CURRENT)
         return price
     }
 
@@ -139,7 +136,7 @@ export class Materials {
             : this.previous[ticker]
 
         if (!receipe) {
-            throw new Error(`Unknown recipe ${ticker} in ${iteration}. Path: ${Material.currentPath.join(",")}`)
+            throw new Error(`Unknown recipe ${ticker} in ${iteration}. Path: ${Core.returnPathAsString()}`)
         }
 
         return receipe
@@ -151,17 +148,13 @@ export class Materials {
         }, {price: Infinity} as unknown as Material)
 
         if (cheapestRecipe.price === Infinity) {
-            throw new Error(`No usable recipes for ticker ${ticker}`)
+            throw new Error(`No usable recipes for ticker ${ticker}, path ${Core.returnPathAsString()}`)
         }
 
         return cheapestRecipe
     }
 }
 
-export enum Iteration {
-    CURRENT = "CURRENT",
-    PREVIOUS = "PREVIOUS"
-}
 
 export type RecipeData = {
     BuildingTicker: string

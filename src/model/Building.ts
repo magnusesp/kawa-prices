@@ -1,6 +1,7 @@
-import config from "../config"
-import {MaterialAmount, Iteration, Materials} from "./Material"
+import {MaterialAmount, Materials} from "./Material"
 import {Worker, Workers} from "./Worker"
+import {baseRoiDays, printNewPrices} from "../config"
+import { Core, Iteration } from "./Core"
 
 export type WorkerAllocation = {
     worker: Worker
@@ -21,6 +22,8 @@ export class Building {
     }
 
     get costPerMs(): number {
+        Core.pushPath(this.ticker, Iteration.LOOKUP, `${this._costPerMs}`)
+
         if (this._costPerMs < 0) {
             this._costPerMs = this.calculateCostPerMs()
         }
@@ -28,9 +31,13 @@ export class Building {
     }
 
     calculateCostPerMs(): number {
-        const cost = this.calculateCostPerMsWorkforce() + this.calculateCostPerMsBuildingRoi()
+        Core.pushPath(this.ticker, Iteration.PREVIOUS)
 
-        if (config.printNewPrices) console.log(`Building\t${this.ticker}\t${cost * 86_400_000}\t(per day)`)
+        const cost =  this.calculateCostPerMsWorkforce() + this.calculateCostPerMsBuildingRoi()
+
+        if (printNewPrices) console.log(`Building\t${this.ticker}\t${cost * 86_400_000}\t(per day)`)
+
+        Core.popPath(this.ticker, Iteration.PREVIOUS)
 
         return cost
     }
@@ -44,8 +51,8 @@ export class Building {
     calculateCostPerMsBuildingRoi(): number {
         return this.buildingCosts.reduce((sum, buildingIngrdient) => {
             const material = Materials.getCheapestRecipeByOutput(buildingIngrdient.ticker, Iteration.PREVIOUS)
-            return sum + material.price * buildingIngrdient.amount / (config.baseRoiDays * 86_400_000)
-        }, 0) * (1 + 1 / 160 * config.baseRoiDays)
+            return sum + material.price * buildingIngrdient.amount / (baseRoiDays * 86_400_000)
+        }, 0) * (1 + 1 / 160 * baseRoiDays)
     }
 
     extractBuildingCosts(data: BuildingData): MaterialAmount[] {
@@ -58,10 +65,17 @@ export class Building {
     extractWorkforce(data: BuildingData): WorkerAllocation[] {
         const workerTypes = ["Pioneers", "Settlers", "Technicians", "Engineers", "Scientists"]
 
-        return workerTypes.map(type => {
+        return workerTypes.reduce((acc: WorkerAllocation[], type: string) => {
             const worker = Workers.getWorkerOfType(type)
-            // @ts-ignore
-            const amount = data[type]
+
+            if (!(type in data)) {
+                throw new Error(`Type ${type} is not present in data`);
+            }
+            const amount = (data as any)[type]
+
+            if(amount < 1) {
+                return acc
+            }
 
             if (!worker) {
                 throw new Error(`Worker of type ${type} does not exist`)
@@ -71,8 +85,9 @@ export class Building {
                 throw new Error(`Data for ${type} is missing or invalid`)
             }
 
-            return {worker, amount}
-        })
+            acc.push({worker, amount})
+            return acc
+        }, [])
     }
 
     cloneWithCost(_costPerMs: number): Building {
@@ -88,6 +103,9 @@ export class Building {
 export class Buildings {
     static current: BuildingsMap = {}
     static getBuildingByTicker(ticker: string): Building {
+        if (!ticker || !this.current[ticker]) {
+            throw new Error(`Unknown building ${ticker}`)
+        }
         return this.current[ticker]
     }
 
