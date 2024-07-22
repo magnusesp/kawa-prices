@@ -1,11 +1,21 @@
-import {Iteration, Materials} from "./Material";
+import { Iteration } from "./Core";
+import {Materials} from "./Material";
 
 export class Statistics {
-    static calculateCorrelation(): number {
+
+    static compare(): number {
         const [prices1, prices2] = this.preparePrices()
-        
         console.log(`Comparing ${prices1.length} prices`)
+
+        const correlation = this.calculateCorrelation(prices1, prices2)
+        console.log(`Correlation: ${correlation}`)
         
+        const avgDiff = this.calculateAvgDiff(prices1, prices2)
+        console.log(`Avg Diff: ${avgDiff.toFixed(4)} %`)
+
+        return avgDiff
+    }
+    static calculateCorrelation(prices1: number[], prices2: number[]): number {
         const n = prices1.length
         const sum1 = prices1.reduce((a, b) => a + b, 0)
         const sum2 = prices2.reduce((a, b) => a + b, 0)
@@ -23,7 +33,11 @@ export class Statistics {
         return numerator / denominator
       }
 
-      static preparePrices(): number[][] {
+    static calculateAvgDiff(prices1: number[], prices2: number[]): number {
+        return prices1.reduce((sum, cur, idx) => sum + (Math.abs(cur - prices2[idx]) / cur), 0) / prices1.length * 100
+    }
+
+    static preparePrices(): number[][] {
           const prices1: number[] = []
           const prices2: number[] = []
           

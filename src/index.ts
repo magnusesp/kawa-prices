@@ -37,21 +37,21 @@ async function main() {
 
     const startStamp = Date.now()
     let counter = 0
-    let correlation = 0
+    let avgDiff = Infinity
 
     do {
         Buildings.prepareNextIteration()
         Materials.prepareNextIteration()
         Workers.prepareNextIteration()
 
-        correlation = Statistics.calculateCorrelation()
+        avgDiff = Statistics.compare()
         counter++
 
         const elapsedTimeMs = Date.now() - startStamp
-        console.log(`Correlation is ${correlation.toFixed(6)} after ${counter} rounds. (${(elapsedTimeMs / counter).toFixed(0)} ms / round)`)
+        console.log(`Correlation is ${avgDiff.toFixed(6)} after ${counter} rounds. (${(elapsedTimeMs / counter).toFixed(0)} ms / round)`)
 
-    } while(counter < 20 && correlation < 0.99)
-//
+    } while(counter < 20 && avgDiff > 1)
+
 //    Materials.allTickers.forEach(ticker => {
 //        console.log(`${ticker}\t${Materials.getCheapestRecipeByOutput(ticker).price.toFixed(2)}`)
 //    })

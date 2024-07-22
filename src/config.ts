@@ -21,4 +21,4 @@ export const workersCacheFile = "./data/workers.json"
 
 
 // Toggles
-export const printNewPrices = true
+export const printNewPrices = false
