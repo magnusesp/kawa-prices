@@ -25,7 +25,7 @@
    * Worker costs ✅
    * Consider repair costs ✅
      * (50% every 80 days => construction cost / 160 * ROI days)
-   * CM cost (area used / 475)
+   * CM cost (area used / 475) ✅
    * ROI of 25 days ✅
 * Materials
    * Price of Material inputs ✅

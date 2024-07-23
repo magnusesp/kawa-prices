@@ -10,14 +10,16 @@ export type WorkerAllocation = {
 
 export class Building {
     ticker: string
+    area: number
     buildingCosts: MaterialAmount[]
     workforce: WorkerAllocation[]
 
     private _costPerMs: number = -1
 
     constructor(data: BuildingData) {
-        this.buildingCosts = this.extractBuildingCosts(data)
         this.ticker = data.Ticker
+        this.area = data.AreaCost
+        this.buildingCosts = this.extractBuildingCosts(data)
         this.workforce = this.extractWorkforce(data)
     }
 
@@ -44,7 +46,7 @@ export class Building {
 
     calculateCostPerMsWorkforce(): number {
         return this.workforce.reduce((sum, allocation) => {
-            return sum + allocation.worker.costPerDay * allocation.amount / 86_400_000
+            return sum + allocation.worker.costPerMs * allocation.amount
         }, 0)
     }
 
@@ -52,8 +54,11 @@ export class Building {
         return this.buildingCosts.reduce((sum, buildingIngrdient) => {
             const material = Materials.getCheapestRecipeByOutput(buildingIngrdient.ticker, Iteration.PREVIOUS)
             return sum + material.price * buildingIngrdient.amount / (baseRoiDays * 86_400_000)
-        }, 0) * (1 + 1 / 160 * baseRoiDays)
+        }, 0)
+        * (this.ticker !== "CM" ? (1 + 1 / 160 * baseRoiDays) : 1)
+        + (this.ticker !== "CM" ? Buildings.getBuildingByTicker("CM").costPerMs * this.area / 475 : 0)
     }
+
 
     extractBuildingCosts(data: BuildingData): MaterialAmount[] {
         return data.BuildingCosts.map(it => ({
