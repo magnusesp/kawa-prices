@@ -18,7 +18,7 @@
    * Using a percentage of CX prices (30-40% discount)
 * Workers
    * Basic consumables ✅
-   * Luxury consumables
+   * Luxury consumables ✅
    * Housing costs (HB1/HB2/...) ✅
 * Buildings
    * Construction costs ✅
