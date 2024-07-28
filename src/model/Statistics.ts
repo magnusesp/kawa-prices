@@ -3,15 +3,11 @@ import {Materials} from "./Materials";
 
 export class Statistics {
 
-    static compare(): number {
+    static compare(): number[] {
         const [prices1, prices2] = this.preparePrices()
         console.log(`Comparing ${prices1.length} prices`)
 
-//        const correlation = this.calculateCorrelation(prices1, prices2)
-//        console.log(`Correlation: ${correlation}`)
-//
-        const avgDiff = this.calculateAvgDiff(prices1, prices2)
-//        console.log(`Avg Diff: ${avgDiff.toFixed(4)} %`)
+        const avgDiff = this.calculateDiff(prices1, prices2)
 
         return avgDiff
     }
@@ -33,8 +29,20 @@ export class Statistics {
         return numerator / denominator
       }
 
-    static calculateAvgDiff(prices1: number[], prices2: number[]): number {
-        return prices1.reduce((sum, cur, idx) => sum + (Math.abs(cur - prices2[idx]) / cur), 0) / prices1.length * 100
+    static calculateDiff(prices1: number[], prices2: number[]): number[] {
+        let min = Infinity
+        let max = 0
+
+        const avg = prices1.reduce((sum, cur, idx) =>{
+            const diff = Math.abs(cur - prices2[idx]) / cur * 100
+            min = Math.min(diff, min)
+            max = Math.max(diff, max)
+
+            return sum + diff
+        }, 0) / prices1.length
+
+        console.log(`AVG: ${avg.toFixed(2)}% MIN: ${min.toFixed(2)}% MAX: ${max.toFixed(2)}%`)
+        return [avg, min, max]
     }
 
     static preparePrices(): number[][] {

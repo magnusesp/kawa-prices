@@ -28,9 +28,9 @@ const argv = yargs.options({
 
 async function main() {
     const priceOverride = {
-        "DW": 66.7,
-        "OVE": 106.7,
-        "RAT": 106.7,
+        "DW": 70,
+        "OVE": 109,
+        "RAT": 109,
     }
 
     Workers.importWorkers(loadWorkers())
@@ -46,7 +46,7 @@ async function main() {
 
     const startStamp = Date.now()
     let counter = 1
-    let avgDiff = Infinity
+    let diff = Infinity
 
     printPrices(Object.keys(priceOverride))
     do {
@@ -54,16 +54,17 @@ async function main() {
         Materials.prepareNextIteration()
         Workers.prepareNextIteration()
 
-        avgDiff = Statistics.compare()
+        const [avg, min, max] = Statistics.compare()
+        diff = max
         counter++
 
         const elapsedTimeMs = Date.now() - startStamp
-        console.log(`Avg Diff is ${avgDiff.toFixed(6)} after ${counter} rounds. (${(elapsedTimeMs / counter).toFixed(0)} ms / round)`)
+        console.log(`Diff is ${diff.toFixed(6)} after ${counter} rounds. (${(elapsedTimeMs / counter).toFixed(0)} ms / round)`)
 //        printPrices([...Object.keys(priceOverride), "C"])
-    } while(counter < 20 && avgDiff > 1)
+    } while(counter < 20 && diff > 1)
 
-    printPrices(Materials.getAllTickers())
-//    printPrices([...Object.keys(priceOverride), "C"])
+//    printPrices(Materials.getAllTickers())
+    printPrices([...Object.keys(priceOverride), "C"])
 }
 
 function printPrices(tickers: string[]) {
