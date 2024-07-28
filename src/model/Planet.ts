@@ -1,3 +1,5 @@
+import {Materials} from "./Materials"
+
 export class Planet {
     name: string
     
@@ -7,83 +9,92 @@ export class Planet {
 }
 
 export class Planets {
+    static planetNameMap: {[index: string]: Planet} = {}
+
     static importPlanets(planets: PlanetData[]) {
-        
+        planets.forEach(planetData => {
+            this.planetNameMap[planetData.PlanetName] = new Planet(planetData)
+            if (planetData.Resources.length > 0) {
+                planetData.Resources.forEach(resData => {
+                    Materials.linkNaturalResourceAndPlanet(resData.MaterialId, planetData.PlanetName, resData.Factor)
+                })
+            }
+        })
     }
 }
 
 
-export type Resource = {
-    MaterialId: string;
-    ResourceType: string;
-    Factor: number;
-};
+export type ResourceData = {
+    MaterialId: string
+    ResourceType: string
+    Factor: number
+}
 
 export type BuildRequirement = {
-    MaterialName: string;
-    MaterialId: string;
-    MaterialTicker: string;
-    MaterialCategory: string;
-    MaterialAmount: number;
-    MaterialWeight: number;
-    MaterialVolume: number;
-};
+    MaterialName: string
+    MaterialId: string
+    MaterialTicker: string
+    MaterialCategory: string
+    MaterialAmount: number
+    MaterialWeight: number
+    MaterialVolume: number
+}
 
 export type ProductionFee = {
-    Category: string;
-    WorkforceLevel: string;
-    FeeAmount: number;
-    FeeCurrency: string;
-};
+    Category: string
+    WorkforceLevel: string
+    FeeAmount: number
+    FeeCurrency: string
+}
 
 export type PlanetData = {
-    Resources: Resource[];
-    BuildRequirements: BuildRequirement[];
-    ProductionFees: ProductionFee[];
-    COGCPrograms: any[]; // Adjust based on actual structure if available
-    COGCVotes: any[]; // Adjust based on actual structure if available
-    COGCUpkeep: any[]; // Adjust based on actual structure if available
-    PlanetId: string;
-    PlanetNaturalId: string;
-    PlanetName: string;
-    Namer: string | null;
-    NamingDataEpochMs: number;
-    Nameable: boolean;
-    SystemId: string;
-    Gravity: number;
-    MagneticField: number;
-    Mass: number;
-    MassEarth: number;
-    OrbitSemiMajorAxis: number;
-    OrbitEccentricity: number;
-    OrbitInclination: number;
-    OrbitRightAscension: number;
-    OrbitPeriapsis: number;
-    OrbitIndex: number;
-    Pressure: number;
-    Radiation: number;
-    Radius: number;
-    Sunlight: number;
-    Surface: boolean;
-    Temperature: number;
-    Fertility: number;
-    HasLocalMarket: boolean;
-    HasChamberOfCommerce: boolean;
-    HasWarehouse: boolean;
-    HasAdministrationCenter: boolean;
-    HasShipyard: boolean;
-    FactionCode: string | null;
-    FactionName: string | null;
-    GoverningEntity: string | null;
-    CurrencyName: string | null;
-    CurrencyCode: string | null;
-    BaseLocalMarketFee: number;
-    LocalMarketFeeFactor: number;
-    WarehouseFee: number;
-    EstablishmentFee: number | null;
-    PopulationId: string;
-    COGCProgramStatus: string | null;
-    PlanetTier: number;
-    UserNameSubmitted: string;
-    Timestamp: string;
-};
+    Resources: ResourceData[]
+    BuildRequirements: BuildRequirement[]
+    ProductionFees: ProductionFee[]
+    COGCPrograms: any[] // Adjust based on actual structure if available
+    COGCVotes: any[] // Adjust based on actual structure if available
+    COGCUpkeep: any[] // Adjust based on actual structure if available
+    PlanetId: string
+    PlanetNaturalId: string
+    PlanetName: string
+    Namer: string | null
+    NamingDataEpochMs: number
+    Nameable: boolean
+    SystemId: string
+    Gravity: number
+    MagneticField: number
+    Mass: number
+    MassEarth: number
+    OrbitSemiMajorAxis: number
+    OrbitEccentricity: number
+    OrbitInclination: number
+    OrbitRightAscension: number
+    OrbitPeriapsis: number
+    OrbitIndex: number
+    Pressure: number
+    Radiation: number
+    Radius: number
+    Sunlight: number
+    Surface: boolean
+    Temperature: number
+    Fertility: number
+    HasLocalMarket: boolean
+    HasChamberOfCommerce: boolean
+    HasWarehouse: boolean
+    HasAdministrationCenter: boolean
+    HasShipyard: boolean
+    FactionCode: string | null
+    FactionName: string | null
+    GoverningEntity: string | null
+    CurrencyName: string | null
+    CurrencyCode: string | null
+    BaseLocalMarketFee: number
+    LocalMarketFeeFactor: number
+    WarehouseFee: number
+    EstablishmentFee: number | null
+    PopulationId: string
+    COGCProgramStatus: string | null
+    PlanetTier: number
+    UserNameSubmitted: string
+    Timestamp: string
+}

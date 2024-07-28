@@ -1,3 +1,4 @@
+import { significantDigits } from "../config"
 import {Core, Iteration } from "./Core"
 
 
@@ -21,7 +22,7 @@ export abstract class BaseMaterial {
 
         if (this._price < 0) {
             try {
-                this._price = this.calculatePrice()
+                this._price = this.roundToXSignificantDigits(this.calculatePrice())
             } catch (e: any) {
                 if (/Circular reference at/.test(e)) {
                     console.error(`Got circular reference for ${this.ticker}, skipping with Infinity`, e)
@@ -32,6 +33,13 @@ export abstract class BaseMaterial {
         return this._price
     }
     
+    roundToXSignificantDigits(price: number) {
+        if (price === 0) return 0;
+        const digits = Math.floor(Math.log10(Math.abs(price))) + 1;
+        const factor = Math.pow(10, significantDigits - digits);
+        return Math.round(price * factor) / factor;
+      }
+
     abstract calculatePrice(): number
     
     cloneWithPrice(_price: number): BaseMaterial {

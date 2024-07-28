@@ -22,6 +22,7 @@ export class Building {
         this.area = data.AreaCost
         this.buildingCosts = this.extractBuildingCosts(data)
         this.workforce = this.extractWorkforce(data)
+        
     }
 
     get costPerMs(): number {

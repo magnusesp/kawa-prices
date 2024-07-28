@@ -1,8 +1,11 @@
 import yargs from "yargs"
 import {Buildings} from "./model/Building"
 import {
-    fetchBuildings, fetchCachedBuildings,
-    fetchCachedNaturalResources, fetchCachedPlanets, fetchCachedRecipes, fetchCachedWorkers, fetchPlanets, fetchRecipes
+    loadBuildings,
+    loadMaterials,
+    loadPlanets,
+    loadRecipes,
+    loadWorkers
 } from "./fetchData";
 import {Workers} from "./model/Worker";
 import {Statistics} from "./model/Statistics";
@@ -10,11 +13,17 @@ import {Planets} from "./model/Planet";
 import {Materials} from "./model/Materials";
 
 interface Argv {
-    fetchData: boolean;
+    fetchBuildings: boolean;
+    fetchMaterials: boolean;
+    fetchPlanets: boolean;
+    fetchRecipes: boolean;
   }
 
 const argv = yargs.options({
-    fetchData: { type: 'boolean', demandOption: false, default: false, describe: 'Flag to fetch data' }
+    fetchBuildings: { type: 'boolean', demandOption: false, default: false, describe: 'Flag to fetch building data' },
+    fetchMaterials: { type: 'boolean', demandOption: false, default: false, describe: 'Flag to fetch material data' },
+    fetchPlanets: { type: 'boolean', demandOption: false, default: false, describe: 'Flag to fetch planet data' },
+    fetchRecipes: { type: 'boolean', demandOption: false, default: false, describe: 'Flag to fetch recipe data' },
 }).argv as Argv
 
 async function main() {
@@ -24,11 +33,11 @@ async function main() {
         "RAT": 106.7,
     }
 
-    Planets.importPlanets(argv.fetchData ? await fetchPlanets() : fetchCachedPlanets())
-    Workers.importWorkers(fetchCachedWorkers())
-    Buildings.importBuildings(argv.fetchData ? await fetchBuildings() : fetchCachedBuildings())
-    Materials.importMaterials(fetchCachedNaturalResources(), [])
-    Materials.importMaterials(argv.fetchData ? await fetchRecipes() : fetchCachedRecipes(), [], priceOverride)
+    Workers.importWorkers(loadWorkers())
+    Buildings.importBuildings(await loadBuildings(argv.fetchBuildings))
+    Materials.importMaterials(await loadMaterials(argv.fetchMaterials))
+    Planets.importPlanets(await loadPlanets(argv.fetchPlanets))
+    Materials.importRecipes(await loadRecipes(argv.fetchRecipes), priceOverride)
     const calcThese = Materials.getAllTickers()
 
     calcThese.forEach(ticker => {
@@ -50,18 +59,17 @@ async function main() {
 
         const elapsedTimeMs = Date.now() - startStamp
         console.log(`Avg Diff is ${avgDiff.toFixed(6)} after ${counter} rounds. (${(elapsedTimeMs / counter).toFixed(0)} ms / round)`)
-        printPrices([...Object.keys(priceOverride), "C"])
+//        printPrices([...Object.keys(priceOverride), "C"])
     } while(counter < 20 && avgDiff > 1)
 
-//    Materials.allTickers.forEach(ticker => {
-//        console.log(`${ticker}\t${Materials.getCheapestRecipeByOutput(ticker).price.toFixed(2)}`)
-//    })
+    printPrices(Materials.getAllTickers())
+//    printPrices([...Object.keys(priceOverride), "C"])
 }
 
 function printPrices(tickers: string[]) {
     tickers.forEach(ticker => {
         const recipe = Materials.getCheapestRecipeByOutput(ticker)
-        console.log(`${ticker}\t${recipe.price.toFixed(2)}\t${recipe.sourceName}`)
+        console.log(`${ticker},${recipe.price.toFixed(2)},${recipe.sourceName}`)
     })
 }
 

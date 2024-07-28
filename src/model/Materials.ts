@@ -1,25 +1,42 @@
-import { BaseMaterial } from "./BaseMaterial"
-import {Core, Iteration } from "./Core"
-import { Material, MaterialRecipeData } from "./Material"
-import { NaturalResourceData } from "./NaturalResource"
+import {BaseMaterial} from "./BaseMaterial"
+import {Core, Iteration} from "./Core"
+import {Material, MaterialRecipeData} from "./Material"
+import {NaturalResource, NaturalResourceData} from "./NaturalResource"
+import {Planet} from "./Planet"
 
 export class Materials {
     static current: MaterialsMap = {}
     static previous: MaterialsMap = {}
 
     static allTickers: string[] = []
+    static allTickersMap: { [index: string]: number } = {}
+    static tickerToMaterialIdMap: { [index: string]: string } = {}
+    static materialIdToTickerMap: { [index: string]: string } = {}
 
-    static importMaterials(
+
+    static importMaterials(materials: MaterialData[]) {
+        materials.forEach(mat => {
+            if (this.tickerToMaterialIdMap[mat.Ticker]) {
+                throw new Error(`Duplicate material ${mat.Ticker} : ${this.tickerToMaterialIdMap[mat.Ticker]} vs ${mat.MaterialId}`)
+            }
+
+            if (this.materialIdToTickerMap[mat.MaterialId]) {
+                throw new Error(`Duplicate material ${mat.MaterialId} : ${this.materialIdToTickerMap[mat.MaterialId]} vs ${mat.Ticker}`)
+            }
+            this.tickerToMaterialIdMap[mat.Ticker] = mat.MaterialId
+            this.materialIdToTickerMap[mat.MaterialId] = mat.Ticker
+        })
+    }
+
+    static importRecipes(
         materialRecipes: MaterialRecipeData[],
-        naturalResources: NaturalResourceData[],
         priceOverride: PriceOverrideMap = {}) {
-        const allTickersMap: {[index: string]: number} = {}
 
         materialRecipes
             .flatMap(recipeData => this.createMaterialInstances(recipeData))
             .forEach(material => {
                 const currentMaterial = material
-                const previousMaterial =  priceOverride[material.ticker] ? material.cloneWithPrice(priceOverride[material.ticker]) : material.cloneWithPrice(0)
+                const previousMaterial = priceOverride[material.ticker] ? material.cloneWithPrice(priceOverride[material.ticker]) : material.cloneWithPrice(0)
 
                 if (this.current[material.ticker]) {
                     this.current[material.ticker].push(currentMaterial)
@@ -29,11 +46,28 @@ export class Materials {
                     this.previous[material.ticker] = [previousMaterial]
                 }
 
-                allTickersMap[material.ticker] = 1
+                this.allTickersMap[material.ticker] = 1
             })
+    }
 
-            this.allTickers = Object.keys(allTickersMap)
-            this.allTickers.sort()
+    static linkNaturalResourceAndPlanet(materialId: string, planetName: string, rawConcentration: number) {
+        const materialTicker = this.materialIdToTickerMap[materialId]
+        const naturalResourceCurrent = new NaturalResource(materialTicker, planetName, rawConcentration)
+        const naturalResourcePrevious = naturalResourceCurrent.cloneWithPrice(0)
+
+        if (!materialTicker) {
+            throw new Error(`Missing material id ${materialId}`)
+        }
+
+        if (this.current[materialTicker]) {
+            this.current[materialTicker].push(naturalResourceCurrent)
+            this.previous[materialTicker].push(naturalResourcePrevious)
+        } else {
+            this.current[materialTicker] = [naturalResourceCurrent]
+            this.previous[materialTicker] = [naturalResourcePrevious]
+        }
+
+        this.allTickersMap[materialTicker] = 1
     }
 
     static createMaterialInstances(data: MaterialRecipeData): Material[] {
@@ -72,8 +106,14 @@ export class Materials {
 
         return cheapestRecipe
     }
-    
+
     static getAllTickers(): string[] {
+        if(this.allTickers.length === 0) {
+            this.allTickers = Object.keys(this.allTickersMap)
+            this.allTickers.sort()
+        }
+
+
         return this.allTickers
     }
 }
@@ -84,4 +124,16 @@ type MaterialsMap = {
 
 type PriceOverrideMap = {
     [index: string]: number
+}
+
+export type MaterialData = {
+    MaterialId: string;
+    CategoryName: string;
+    CategoryId: string;
+    Name: string;
+    Ticker: string;
+    Weight: number;
+    Volume: number;
+    UserNameSubmitted: string;
+    Timestamp: string; // or Date if converting to Date object
 }
