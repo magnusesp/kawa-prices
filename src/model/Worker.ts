@@ -1,7 +1,7 @@
 import { printNewPrices } from "../config";
 import { Buildings } from "./Building";
 import { Core, Iteration } from "./Core";
-import {Materials} from "./Material";
+import { Materials } from "./Materials"
 
 export type DailyConsumption = {
     ticker: string

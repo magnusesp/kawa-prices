@@ -1,5 +1,5 @@
 import { Iteration } from "./Core";
-import {Materials} from "./Material";
+import {Materials} from "./Materials";
 
 export class Statistics {
 
@@ -7,11 +7,11 @@ export class Statistics {
         const [prices1, prices2] = this.preparePrices()
         console.log(`Comparing ${prices1.length} prices`)
 
-        const correlation = this.calculateCorrelation(prices1, prices2)
-        console.log(`Correlation: ${correlation}`)
-        
+//        const correlation = this.calculateCorrelation(prices1, prices2)
+//        console.log(`Correlation: ${correlation}`)
+//
         const avgDiff = this.calculateAvgDiff(prices1, prices2)
-        console.log(`Avg Diff: ${avgDiff.toFixed(4)} %`)
+//        console.log(`Avg Diff: ${avgDiff.toFixed(4)} %`)
 
         return avgDiff
     }
@@ -41,7 +41,7 @@ export class Statistics {
           const prices1: number[] = []
           const prices2: number[] = []
           
-          Materials.allTickers.forEach(ticker => {
+          Materials.getAllTickers().forEach(ticker => {
               prices1.push(Materials.getCheapestRecipeByOutput(ticker, Iteration.PREVIOUS).price)
               prices2.push(Materials.getCheapestRecipeByOutput(ticker, Iteration.CURRENT).price)
           })

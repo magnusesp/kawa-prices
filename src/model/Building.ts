@@ -1,7 +1,8 @@
-import {MaterialAmount, Materials} from "./Material"
+import {MaterialAmount} from "./Material"
 import {Worker, Workers} from "./Worker"
 import {baseRoiDays, printNewPrices} from "../config"
 import { Core, Iteration } from "./Core"
+import { Materials } from "./Materials"
 
 export type WorkerAllocation = {
     worker: Worker

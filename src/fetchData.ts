@@ -10,9 +10,9 @@ import {
 } from './config'
 import {BuildingData} from "./model/Building";
 import * as fs from "node:fs";
-import {RecipeData} from "./model/Material";
 import {WorkerData} from "./model/Worker";
 import { PlanetData } from './model/Planet';
+import { MaterialRecipeData } from './model/Material';
 
 export async function fetchBuildings(): Promise<BuildingData[]> {
   return fetchAndCache(buildingsUrl, buildingCacheFile)
@@ -30,15 +30,15 @@ export function fetchCachedPlanets(): PlanetData[] {
   return JSON.parse(fs.readFileSync(planetCacheFile).toString())
 }
 
-export async function fetchRecipes(): Promise<RecipeData[]> {
+export async function fetchRecipes(): Promise<MaterialRecipeData[]> {
   return fetchAndCache(recipesUrl, recipesCacheFile)
 }
 
-export function fetchCachedRecipes(): RecipeData[] {
+export function fetchCachedRecipes(): MaterialRecipeData[] {
   return JSON.parse(fs.readFileSync(recipesCacheFile).toString())
 }
 
-export function fetchCachedNaturalResources(): RecipeData[] {
+export function fetchCachedNaturalResources(): MaterialRecipeData[] {
   const buildingTime:{[index: string]: number} = {
     COL: 21600000,
     EXT: 21600000,

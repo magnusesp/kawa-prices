@@ -1,5 +1,9 @@
 export class Planet {
+    name: string
     
+    constructor(data: PlanetData) {
+        this.name = data.PlanetName
+    }
 }
 
 export class Planets {
