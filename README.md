@@ -36,7 +36,7 @@
    * Production fees
 * Natural resources
    * Same as Materials, plus:
-      * Optimal planet
+      * Optimal planet ✅
       * Optimal planet w/ range of planet X
       * Shipping costs
 * Planets
