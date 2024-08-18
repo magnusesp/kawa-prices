@@ -39,7 +39,8 @@
    * Same as Materials, plus:
       * Optimal planet ✅
       * Optimal planet w/ range of planet X ❌
-      * Shipping costs (t/m and sf/ff) ❌
+      * Shipping costs (t/m) ❌
+      * Shipping costs (sf/ff) ❌
 * Planets
    * Prices per planet ❌
    * Shipping costs (fixed prices per jump/intra system travel) ❌
