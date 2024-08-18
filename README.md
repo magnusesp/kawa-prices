@@ -15,7 +15,7 @@
 ## TODO
 * Initial prices
    * Setting DW, OVE, RAT prices at start ✅
-   * Using a percentage of CX prices (30-40% discount)
+   * Using a percentage of CX prices (30-40% discount) ❌
 * Workers
    * Basic consumables ✅
    * Luxury consumables ✅
@@ -32,17 +32,17 @@
    * Price of Natural resources inputs 🟡
    * Multiple outputs: divide cost equally per unit produced ✅
    * Building costs (divided by ms per unit) ✅
-   * CoGC
-   * Production fees
+   * CoGC ❌
+   * Production fees ❌
 * Natural resources
    * Same as Materials, plus:
       * Optimal planet ✅
-      * Optimal planet w/ range of planet X
-      * Shipping costs
+      * Optimal planet w/ range of planet X ❌
+      * Shipping costs ❌
 * Planets
-   * Prices per planet
-   * Shipping costs (fixed prices per jump/intra system travel)
-   * Shipping costs (dynamic)
+   * Prices per planet ❌
+   * Shipping costs (fixed prices per jump/intra system travel) ❌
+   * Shipping costs (dynamic) ❌
 
 
 
