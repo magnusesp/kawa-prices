@@ -29,6 +29,7 @@
    * ROI of 25 days ✅
 * Materials
    * Price of Material inputs ✅
+   * Shipping costs of input Materials (made on min(distance input -> X <- BEN CX) + Correct COGC) ❌
    * Price of Natural resources inputs 🟡
    * Multiple outputs: divide cost equally per unit produced ✅
    * Building costs (divided by ms per unit) ✅
@@ -38,7 +39,7 @@
    * Same as Materials, plus:
       * Optimal planet ✅
       * Optimal planet w/ range of planet X ❌
-      * Shipping costs ❌
+      * Shipping costs (t/m and sf/ff) ❌
 * Planets
    * Prices per planet ❌
    * Shipping costs (fixed prices per jump/intra system travel) ❌
